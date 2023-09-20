@@ -42,6 +42,11 @@ class SaveReminderViewModel(val app: Application, val dataSource: ReminderDataSo
         }
     }
 
+    fun updateCurrentPoiAndLocationDesc(poi: PointOfInterest) {
+        selectedPOI.value = poi
+        reminderSelectedLocationStr.value = poi.name
+    }
+
     /**
      * Save the reminder to the data source
      */
@@ -78,5 +83,13 @@ class SaveReminderViewModel(val app: Application, val dataSource: ReminderDataSo
             return false
         }
         return true
+    }
+
+    fun showMarkerErrorMessage() {
+        showToast.value = app.getString(R.string.select_poi)
+    }
+
+    fun showLocationPermissionErrorMessage() {
+        showToast.value = app.getString(R.string.permission_denied_explanation)
     }
 }

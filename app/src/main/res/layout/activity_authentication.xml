@@ -23,16 +23,13 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <TextView
+        <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/login_button"
             android:layout_width="match_parent"
-            android:layout_height="@dimen/button_height_normal"
+            android:layout_height="wrap_content"
             android:background="@color/colorAccent"
             android:layout_margin="@dimen/margin_normal"
             android:text="@string/login"
-            android:textAllCaps="true"
-            android:textAlignment="center"
-            android:gravity="center"
             android:textColor="@color/white"
             android:textSize="@dimen/text_size_medium"
             app:layout_constraintBottom_toBottomOf="parent"
