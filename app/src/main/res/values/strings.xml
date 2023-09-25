@@ -41,4 +41,6 @@
     <string name="geofence_too_many_pending_intents">You have provided too many PendingIntents to the addGeofences() call.</string>
     <string name="unknown_geofence_error">Unknown error: the Geofence service is not available now</string>
     <string name="error_adding_geofence">Error Happened, Can\'t Add Geofence</string>
+    <string name="reminder_title_label">Reminder</string>
+    <string name="location_title_label">Location</string>
 </resources>

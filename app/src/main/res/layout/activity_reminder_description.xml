@@ -10,24 +10,78 @@
             type="com.udacity.project4.locationreminders.reminderslist.ReminderDataItem" />
     </data>
 
-    <LinearLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:gravity="center"
         android:orientation="vertical"
         tools:context=".locationreminders.ReminderDescriptionActivity">
 
-        <!-- TODO: Add the design of the reminder details -->
+        <TextView
+            android:id="@+id/reminderTitleLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/reminder_title_label"
+            android:textStyle="bold"
+            android:textSize="@dimen/text_size_large"
+            android:layout_margin="@dimen/margin_normal"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"/>
 
         <TextView
-            android:layout_width="match_parent"
+            android:id="@+id/reminderTitle"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:gravity="center"
-            android:text="Reminder Details"
-            android:textSize="@dimen/text_size_large"
-            app:layout_constraintBottom_toBottomOf="parent"
+            android:layout_margin="@dimen/margin_normal"
+            android:layout_marginTop="16dp"
+            android:textSize="@dimen/text_size_medium"
+            android:text="@{reminderDataItem.title}"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/reminderTitleLabel"
+            tools:text="Take the trash out!" />
+
+        <TextView
+            android:id="@+id/reminderDescription"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/margin_normal"
+            android:textSize="@dimen/text_size_medium"
+            android:textStyle="italic"
+            android:text="@{reminderDataItem.description}"
+            app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-    </LinearLayout>
+            app:layout_constraintTop_toBottomOf="@id/reminderTitle"
+            tools:text="When you get home, don't forget to take the trash out as today is the day you should do it!" />
+
+        <TextView
+            android:id="@+id/locationTitleLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/location_title_label"
+            android:textStyle="bold"
+            android:textSize="@dimen/text_size_large"
+            android:layout_margin="@dimen/margin_normal"
+            app:layout_constraintTop_toBottomOf="@id/reminderDescription"
+            app:layout_constraintStart_toStartOf="parent"/>
+
+        <androidx.cardview.widget.CardView
+            android:layout_width="0dp"
+            android:layout_height="250dp"
+            android:layout_margin="@dimen/margin_normal"
+            app:cardCornerRadius="@dimen/cardview_corner_radius_normal"
+            android:elevation="@dimen/cardview_elevation_normal"
+            app:layout_constraintTop_toBottomOf="@id/locationTitleLabel"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent">
+
+            <androidx.fragment.app.FragmentContainerView
+                android:id="@+id/map"
+                android:name="com.google.android.gms.maps.SupportMapFragment"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+        </androidx.cardview.widget.CardView>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>
