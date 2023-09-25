@@ -145,14 +145,15 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
 
     private fun onLocationSelected() {
         if (poiMarker != null) {
+            val latitude = poiMarker?.position?.latitude ?: DEF_LAT
+            val longitude = poiMarker?.position?.longitude ?: DEF_LONG
             val poi = PointOfInterest(
                 LatLng(
-                    poiMarker?.position?.latitude ?: DEF_LAT,
-                    poiMarker?.position?.longitude ?: DEF_LONG
+                    latitude,
+                    longitude
                 ), poiMarker?.id ?: DEF_ID, poiMarker?.title ?: ""
             )
             _viewModel.updateCurrentPoiAndLocationDesc(poi)
-
             navigateBackToSaveReminder()
         } else {
             _viewModel.showMarkerErrorMessage()

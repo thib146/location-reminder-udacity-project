@@ -44,6 +44,8 @@ class SaveReminderViewModel(val app: Application, val dataSource: ReminderDataSo
 
     fun updateCurrentPoiAndLocationDesc(poi: PointOfInterest) {
         selectedPOI.value = poi
+        latitude.value = poi.latLng.latitude
+        longitude.value = poi.latLng.longitude
         reminderSelectedLocationStr.value = poi.name
     }
 
@@ -91,5 +93,9 @@ class SaveReminderViewModel(val app: Application, val dataSource: ReminderDataSo
 
     fun showLocationPermissionErrorMessage() {
         showToast.value = app.getString(R.string.permission_denied_explanation)
+    }
+
+    fun showTitleErrorMessage() {
+        showToast.value = app.getString(R.string.select_title)
     }
 }
