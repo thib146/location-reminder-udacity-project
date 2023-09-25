@@ -95,6 +95,15 @@ class SaveReminderFragment : BaseFragment() {
 
     private fun saveReminderToLocalDb(reminderData: ReminderDataItem) {
         _viewModel.validateAndSaveReminder(reminderData)
+
+        navigationToRemindersList()
+    }
+
+    private fun navigationToRemindersList() {
+        // Navigate back to the Reminders List
+        val directions = SaveReminderFragmentDirections
+            .actionSaveReminderFragmentToReminderListFragment()
+        _viewModel.navigationCommand.value = NavigationCommand.To(directions)
     }
 
     private fun checkPermissionsAndStartGeofencing(reminderData: ReminderDataItem) {
@@ -109,7 +118,7 @@ class SaveReminderFragment : BaseFragment() {
      *  Uses the Location Client to check the current state of location settings, and gives the user
      *  the opportunity to turn on location services within our app.
      */
-    private fun checkDeviceLocationSettingsAndStartGeofence(resolve:Boolean = true, reminderData: ReminderDataItem) {
+    private fun checkDeviceLocationSettingsAndStartGeofence(resolve: Boolean = true, reminderData: ReminderDataItem) {
         val locationRequest = LocationRequest.create().apply {
             priority = LocationRequest.PRIORITY_LOW_POWER
         }
