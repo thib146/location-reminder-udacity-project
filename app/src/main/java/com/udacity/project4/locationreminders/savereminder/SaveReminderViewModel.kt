@@ -67,7 +67,10 @@ class SaveReminderViewModel(val app: Application, val dataSource: ReminderDataSo
             )
             showLoading.value = false
             showToast.value = app.getString(R.string.reminder_saved)
-            navigationCommand.value = NavigationCommand.Back
+
+            val directions = SaveReminderFragmentDirections
+                .actionSaveReminderFragmentToReminderListFragment()
+            navigationCommand.value = NavigationCommand.To(directions)
         }
     }
 
@@ -93,9 +96,5 @@ class SaveReminderViewModel(val app: Application, val dataSource: ReminderDataSo
 
     fun showLocationPermissionErrorMessage() {
         showToast.value = app.getString(R.string.permission_denied_explanation)
-    }
-
-    fun showTitleErrorMessage() {
-        showToast.value = app.getString(R.string.select_title)
     }
 }

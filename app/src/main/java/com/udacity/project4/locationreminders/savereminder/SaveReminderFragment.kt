@@ -85,25 +85,12 @@ class SaveReminderFragment : BaseFragment() {
             val longitude = _viewModel.longitude.value
             val reminderData = ReminderDataItem(title, description, location, latitude, longitude)
 
-            if (title.isNullOrEmpty()) {
-                _viewModel.showTitleErrorMessage()
-            } else {
-                checkPermissionsAndStartGeofencing(reminderData)
-            }
+            checkPermissionsAndStartGeofencing(reminderData)
         }
     }
 
     private fun saveReminderToLocalDb(reminderData: ReminderDataItem) {
         _viewModel.validateAndSaveReminder(reminderData)
-
-        navigationToRemindersList()
-    }
-
-    private fun navigationToRemindersList() {
-        // Navigate back to the Reminders List
-        val directions = SaveReminderFragmentDirections
-            .actionSaveReminderFragmentToReminderListFragment()
-        _viewModel.navigationCommand.value = NavigationCommand.To(directions)
     }
 
     private fun checkPermissionsAndStartGeofencing(reminderData: ReminderDataItem) {
@@ -174,9 +161,6 @@ class SaveReminderFragment : BaseFragment() {
 
         geofencingClient.addGeofences(geofencingRequest, geofencePendingIntent).run {
             addOnSuccessListener {
-                Toast.makeText(activity, R.string.reminder_saved,
-                    Toast.LENGTH_SHORT)
-                    .show()
                 Log.e("Add Geofence", geofence.requestId)
                 saveReminderToLocalDb(reminderData)
             }
