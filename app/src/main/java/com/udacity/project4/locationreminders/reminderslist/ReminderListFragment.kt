@@ -3,7 +3,10 @@ package com.udacity.project4.locationreminders.reminderslist
 import android.content.Intent
 import android.os.Bundle
 import android.view.*
+import androidx.core.view.MenuHost
+import androidx.core.view.MenuProvider
 import androidx.databinding.DataBindingUtil
+import androidx.lifecycle.Lifecycle
 import com.firebase.ui.auth.AuthUI
 import com.udacity.project4.R
 import com.udacity.project4.authentication.AuthenticationActivity
@@ -31,7 +34,7 @@ class ReminderListFragment : BaseFragment() {
         )
         binding.viewModel = _viewModel
 
-        setHasOptionsMenu(true)
+        setupMenu()
         setDisplayHomeAsUpEnabled(false)
         setTitle(getString(R.string.app_name))
         binding.refreshLayout.setOnRefreshListener { _viewModel.loadReminders() }
@@ -69,20 +72,24 @@ class ReminderListFragment : BaseFragment() {
         binding.reminderssRecyclerView.setup(adapter)
     }
 
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        when (item.itemId) {
-            R.id.logout -> {
-                AuthUI.getInstance().signOut(requireActivity())
-                val intent = Intent(this@ReminderListFragment.requireContext(), AuthenticationActivity::class.java)
-                startActivity(intent)
+    private fun setupMenu() {
+        val menuHost: MenuHost = requireActivity()
+        menuHost.addMenuProvider(object: MenuProvider {
+            override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
+                menuInflater.inflate(R.menu.main_menu, menu)
             }
-        }
-        return super.onOptionsItemSelected(item)
-    }
 
-    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        super.onCreateOptionsMenu(menu, inflater)
-        // Display logout as menu item
-        inflater.inflate(R.menu.main_menu, menu)
+            override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
+                return when (menuItem.itemId) {
+                    R.id.logout -> {
+                        AuthUI.getInstance().signOut(requireActivity())
+                        val intent = Intent(this@ReminderListFragment.requireContext(), AuthenticationActivity::class.java)
+                        startActivity(intent)
+                        true
+                    }
+                    else -> false
+                }
+            }
+        }, viewLifecycleOwner, Lifecycle.State.RESUMED)
     }
 }

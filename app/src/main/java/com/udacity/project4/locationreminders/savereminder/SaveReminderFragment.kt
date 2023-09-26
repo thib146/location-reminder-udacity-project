@@ -22,6 +22,7 @@ import com.google.android.gms.location.GeofencingRequest
 import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.LocationSettingsRequest
+import com.google.android.gms.location.Priority
 import com.google.android.material.snackbar.Snackbar
 import com.udacity.project4.R
 import com.udacity.project4.base.BaseFragment
@@ -95,7 +96,7 @@ class SaveReminderFragment : BaseFragment() {
 
     private fun checkPermissionsAndStartGeofencing(reminderData: ReminderDataItem) {
         if (foregroundAndBackgroundLocationPermissionApproved()) {
-            checkDeviceLocationSettingsAndStartGeofence(true, reminderData)
+            checkDeviceLocationSettingsAndStartGeofence(reminderData)
         } else {
             requestForegroundAndBackgroundLocationPermissions()
         }
@@ -105,16 +106,14 @@ class SaveReminderFragment : BaseFragment() {
      *  Uses the Location Client to check the current state of location settings, and gives the user
      *  the opportunity to turn on location services within our app.
      */
-    private fun checkDeviceLocationSettingsAndStartGeofence(resolve: Boolean = true, reminderData: ReminderDataItem) {
-        val locationRequest = LocationRequest.create().apply {
-            priority = LocationRequest.PRIORITY_LOW_POWER
-        }
+    private fun checkDeviceLocationSettingsAndStartGeofence(reminderData: ReminderDataItem) {
+        val locationRequest = LocationRequest.Builder(Priority.PRIORITY_LOW_POWER, LOCATION_REQUEST_TIME_INTERVAL).build()
         val builder = LocationSettingsRequest.Builder().addLocationRequest(locationRequest)
         val settingsClient = LocationServices.getSettingsClient(requireActivity())
         val locationSettingsResponseTask =
             settingsClient.checkLocationSettings(builder.build())
         locationSettingsResponseTask.addOnFailureListener { exception ->
-            if (exception is ResolvableApiException && resolve) {
+            if (exception is ResolvableApiException) {
                 try {
                     exception.startResolutionForResult(requireActivity(), REQUEST_TURN_DEVICE_LOCATION_ON)
                 } catch (sendEx: IntentSender.SendIntentException) {
@@ -125,7 +124,7 @@ class SaveReminderFragment : BaseFragment() {
                     binding.root,
                     R.string.location_required_error, Snackbar.LENGTH_INDEFINITE
                 ).setAction(android.R.string.ok) {
-                    checkDeviceLocationSettingsAndStartGeofence(true, reminderData)
+                    checkDeviceLocationSettingsAndStartGeofence(reminderData)
                 }.show()
             }
         }
@@ -228,6 +227,7 @@ class SaveReminderFragment : BaseFragment() {
         const val REQUEST_FOREGROUND_AND_BACKGROUND_PERMISSION_RESULT_CODE = 33
         const val REQUEST_FOREGROUND_ONLY_PERMISSIONS_REQUEST_CODE = 34
         const val REQUEST_TURN_DEVICE_LOCATION_ON = 29
+        const val LOCATION_REQUEST_TIME_INTERVAL = 120000L
 
         internal const val ACTION_GEOFENCE_EVENT =
             "SaveReminderFragment.action.ACTION_GEOFENCE_EVENT"

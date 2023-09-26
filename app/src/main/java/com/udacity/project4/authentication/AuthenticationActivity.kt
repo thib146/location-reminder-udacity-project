@@ -55,8 +55,6 @@ class AuthenticationActivity : AppCompatActivity() {
     }
 
     private fun launchSignInFlow() {
-        // Give users the option to sign in / register with their email or Google account. If users
-        // choose to register with their email, they will need to create a password as well.
         val providers = arrayListOf(
             AuthUI.IdpConfig.EmailBuilder().build(), AuthUI.IdpConfig.GoogleBuilder().build()
         )
@@ -72,16 +70,14 @@ class AuthenticationActivity : AppCompatActivity() {
     private fun onSignInResult(result: FirebaseAuthUIAuthenticationResult) {
         val response = result.idpResponse
         if (result.resultCode == Activity.RESULT_OK) {
-            // Successfully signed in user.
+            // Successfully signed in user
             Log.i(
                 TAG,
                 "Successfully signed in user " +
                         "${FirebaseAuth.getInstance().currentUser?.displayName}!"
             )
         } else {
-            // Sign in failed. If response is null the user canceled the sign-in flow using
-            // the back button. Otherwise check response.getError().getErrorCode() and handle
-            // the error.
+            // Sign in failed
             Log.i(TAG, "Sign in unsuccessful ${response?.error?.errorCode}")
         }
     }
