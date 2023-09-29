@@ -12,6 +12,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.pauseDispatcher
 import kotlinx.coroutines.test.resumeDispatcher
 import org.hamcrest.CoreMatchers.`is`
+import org.hamcrest.CoreMatchers.not
 import org.hamcrest.MatcherAssert.assertThat
 import org.junit.Before
 import org.junit.Rule
@@ -68,7 +69,7 @@ class RemindersListViewModelTest {
         remindersListViewModel.loadReminders()
 
         // Then assert that the remindersList in the ViewModel has been updated correctly
-        val reminderListViewModel = remindersListViewModel.remindersList.value
+        val reminderListViewModel = remindersListViewModel.remindersList.getOrAwaitValue()
         if (!reminderListViewModel.isNullOrEmpty()) {
             for (reminderViewModel in reminderListViewModel) {
                 val reminderDatabase = remindersLocalRepository.remindersServiceData[reminderViewModel.id]
@@ -80,5 +81,18 @@ class RemindersListViewModelTest {
                 assertThat(reminderDatabase?.location, `is`(reminderViewModel.location))
             }
         }
+    }
+
+    @Test
+    fun loadRemindersWhenDBIsUnavailable_callErrorToDisplay() {
+        // Make the repository return errors
+        remindersLocalRepository.setReturnError(true)
+
+        // When loading all reminders
+        remindersListViewModel.loadReminders()
+
+        // Then no data and an error message are shown
+        assertThat(remindersListViewModel.showNoData.getOrAwaitValue(), `is`(true))
+        assertThat(remindersListViewModel.showErrorMessage.getOrAwaitValue(), not(""))
     }
 }
