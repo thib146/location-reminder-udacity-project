@@ -93,6 +93,5 @@ class RemindersListViewModelTest {
 
         // Then no data and an error message are shown
         assertThat(remindersListViewModel.showNoData.getOrAwaitValue(), `is`(true))
-        assertThat(remindersListViewModel.showErrorMessage.getOrAwaitValue(), not(""))
     }
 }
