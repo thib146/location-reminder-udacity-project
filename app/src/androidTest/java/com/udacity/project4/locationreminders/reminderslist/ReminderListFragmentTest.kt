@@ -1,13 +1,10 @@
 package com.udacity.project4.locationreminders.reminderslist
 
-import android.app.Instrumentation
 import android.os.Bundle
 import androidx.fragment.app.testing.launchFragmentInContainer
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
 import androidx.recyclerview.widget.RecyclerView
-import androidx.room.Room
-import androidx.test.core.app.ApplicationProvider.getApplicationContext
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.assertion.ViewAssertions.*
@@ -15,17 +12,14 @@ import androidx.test.espresso.contrib.RecyclerViewActions
 import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.MediumTest
-import androidx.test.platform.app.InstrumentationRegistry
 import com.udacity.project4.R
-import com.udacity.project4.locationreminders.ReminderDescriptionActivity
+import com.udacity.project4.ServiceLocator
+import com.udacity.project4.locationreminders.data.ReminderDataSource
 import com.udacity.project4.locationreminders.data.dto.ReminderDTO
-import com.udacity.project4.locationreminders.data.local.RemindersDatabase
-import com.udacity.project4.locationreminders.data.local.RemindersLocalRepository
-import kotlinx.coroutines.Dispatchers
+import com.udacity.project4.locationreminders.data.local.FakeRemindersRepository
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
 import org.junit.After
-import org.junit.Assert.*
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -34,25 +28,20 @@ import org.mockito.Mockito.verify
 
 @RunWith(AndroidJUnit4::class)
 @ExperimentalCoroutinesApi
-//UI Testing
 @MediumTest
 class ReminderListFragmentTest {
 
-    private lateinit var localDataSource: RemindersLocalRepository
-    private lateinit var database: RemindersDatabase
+    private lateinit var localDataSource: ReminderDataSource
 
     @Before
     fun initRepository() {
-        database = Room.inMemoryDatabaseBuilder(
-            getApplicationContext(),
-            RemindersDatabase::class.java).allowMainThreadQueries().build()
-
-        localDataSource = RemindersLocalRepository(database.reminderDao(), Dispatchers.Main)
+        localDataSource = FakeRemindersRepository()
+        ServiceLocator.remindersDataSource = localDataSource
     }
 
     @After
-    fun cleanupDb() {
-        database.close()
+    fun cleanupDb() = runTest {
+        ServiceLocator.resetRepository()
     }
 
     @Test
@@ -95,16 +84,9 @@ class ReminderListFragmentTest {
                 hasDescendant(withText("TITLE1")), click()
             ))
 
-        // THEN - Verify that we navigate to the Detail activity
-        val am = Instrumentation.ActivityMonitor(
-            ReminderDescriptionActivity::class.java.name,
-            null,
-            true
-        )
-        InstrumentationRegistry.getInstrumentation().addMonitor(am)
-
-
-        assertTrue(InstrumentationRegistry.getInstrumentation().checkMonitorHit(am, 1))
+        // THEN - Verify that we navigate to the Detail activity by checking if we see the Reminder and Location titles
+        onView(withText("Reminder")).check(matches(isDisplayed()))
+        onView(withText("Location")).check(matches(isDisplayed()))
     }
 
     @Test
@@ -131,7 +113,7 @@ class ReminderListFragmentTest {
         onView(withText("LOCATION2")).check(matches(isDisplayed()))
 
         // The "No Data" should also NOT be displayed
-        onView(withText("No Data")).check(doesNotExist())
+        onView(withText("No Data")).check(matches(withEffectiveVisibility(Visibility.GONE)))
     }
 
     @Test

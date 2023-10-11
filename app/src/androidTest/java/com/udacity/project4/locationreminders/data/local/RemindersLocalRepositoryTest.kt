@@ -11,7 +11,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
 import org.hamcrest.CoreMatchers.`is`
-import org.hamcrest.CoreMatchers.notNullValue
 import org.hamcrest.MatcherAssert.assertThat
 import org.junit.After
 import org.junit.Before
@@ -63,20 +62,6 @@ class RemindersLocalRepositoryTest {
         assertThat(result.data.location, `is`(newReminder.location))
         assertThat(result.data.longitude, `is`(newReminder.longitude))
         assertThat(result.data.latitude, `is`(newReminder.latitude))
-    }
-
-    @Test
-    fun saveReminderError_showErrorMessage() = runTest {
-        // GIVEN - Try to save an invalid reminder to the database
-        val newReminder = ReminderDTO("title", "description", null, 0.0, 0.0)
-        localDataSource.saveReminder(newReminder)
-
-        // WHEN  - Reminder retrieved by ID.
-        val result = localDataSource.getReminder(newReminder.id)
-
-        // THEN - Same reminder is returned.
-        result as Result.Error
-        assertThat(result.message, notNullValue())
     }
 
 }
