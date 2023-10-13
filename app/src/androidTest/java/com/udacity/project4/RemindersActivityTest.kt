@@ -140,7 +140,7 @@ class RemindersActivityTest :
     }
 
     @Test
-    fun addAndSaveNewInvalidReminder_toastErrorMessageDisplaying() {
+    fun addAndSaveNewReminderWithoutLocation_toastErrorMessageDisplaying() {
         // Set initial state
         val activityScenario = ActivityScenario.launch(RemindersActivity::class.java)
         dataBindingIdlingResource.monitorActivity(activityScenario)
@@ -158,6 +158,28 @@ class RemindersActivityTest :
 
         // Verify that the Location error toast message appears
         onView(withText(R.string.select_location)).inRoot(withDecorView(not(getActivity(appContext)?.window?.decorView))).check(matches(isDisplayed()))
+
+        activityScenario.close()
+    }
+
+    @Test
+    fun addAndSaveNewReminderWithoutTitle_toastErrorMessageDisplaying() {
+        // Set initial state
+        val activityScenario = ActivityScenario.launch(RemindersActivity::class.java)
+        dataBindingIdlingResource.monitorActivity(activityScenario)
+
+        // Click on the "Add Reminder" FAB
+        onView(ViewMatchers.withId(R.id.addReminderFAB)).perform(ViewActions.click())
+
+        // Fill location but not Title/Description
+        onView(ViewMatchers.withId(R.id.selectedLocation)).perform(setTextInTextView("LOCATION1"))
+
+        // Click on Save Reminder without a Location
+        onView(isRoot()).perform(ViewActions.closeSoftKeyboard())
+        onView(ViewMatchers.withId(R.id.saveReminder)).perform(ViewActions.click())
+
+        // Verify that the Location Snackbar error message appears
+        onView(withText(R.string.err_enter_title)).inRoot(withDecorView(not(getActivity(appContext)?.window?.decorView))).check(matches(isDisplayed()))
 
         activityScenario.close()
     }
