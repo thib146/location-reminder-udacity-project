@@ -42,6 +42,7 @@ class SaveReminderFragment : BaseFragment() {
     private lateinit var binding: FragmentSaveReminderBinding
 
     private val runningQOrLater = android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.Q
+    private val runningTiramisuOrLater = android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU
 
     private lateinit var geofencingClient: GeofencingClient
 
@@ -166,6 +167,14 @@ class SaveReminderFragment : BaseFragment() {
      */
     @SuppressLint("MissingPermission")
     private fun addNewGeofenceLocation(reminderData: ReminderDataItem) {
+        if (runningTiramisuOrLater) {
+            if (PackageManager.PERMISSION_GRANTED !=
+                    ActivityCompat.checkSelfPermission(
+                        requireActivity(), Manifest.permission.POST_NOTIFICATIONS)) {
+                        requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+                    }
+        }
+
         val geofence = Geofence.Builder()
             .setRequestId(reminderData.id)
             .setCircularRegion(
