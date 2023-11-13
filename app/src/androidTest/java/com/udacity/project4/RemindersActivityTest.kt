@@ -1,6 +1,8 @@
 package com.udacity.project4
 
 import android.app.Application
+import android.view.InputDevice
+import android.view.MotionEvent
 import android.view.View
 import android.widget.TextView
 import androidx.test.core.app.ActivityScenario
@@ -9,6 +11,9 @@ import androidx.test.espresso.Espresso.*
 import androidx.test.espresso.IdlingRegistry
 import androidx.test.espresso.UiController
 import androidx.test.espresso.ViewAction
+import androidx.test.espresso.action.GeneralClickAction
+import androidx.test.espresso.action.Press
+import androidx.test.espresso.action.Tap
 import androidx.test.espresso.action.ViewActions
 import androidx.test.espresso.action.ViewActions.clearText
 import androidx.test.espresso.action.ViewActions.typeText
@@ -125,9 +130,9 @@ class RemindersActivityTest :
         // Click on the Select Location TextView
         onView(ViewMatchers.withId(R.id.selectLocation)).perform(ViewActions.click())
 
-        // Go back to the previous screen and manually save the location as we can't test Google Maps with Espresso
-        onView(isRoot()).perform(ViewActions.pressBack())
-        onView(ViewMatchers.withId(R.id.selectedLocation)).perform(setTextInTextView("LOCATION1"))
+        // Perform a long click in the middle of the map then save
+        onView(ViewMatchers.withId(R.id.map)).perform(longClickIn(500, 500))
+        onView(ViewMatchers.withId(R.id.save_location_button)).perform(ViewActions.click())
 
         // Click on Save Reminder
         onView(ViewMatchers.withId(R.id.saveReminder)).perform(ViewActions.click())
@@ -135,6 +140,18 @@ class RemindersActivityTest :
         // Verify reminder is displayed on screen in the reminder list
         onView(withText("TITLE1")).check(matches(isDisplayed()))
         onView(withText("DESCRIPTION1")).check(matches(isDisplayed()))
+
+        // Verify "Reminder saved" toast message is shown
+        // ToastMatcher doesn't seem to work on API >= 30: https://github.com/android/android-test/issues/803
+        if (android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.R) {
+            onView(withText(R.string.reminder_saved)).inRoot(
+                withDecorView(
+                    not(
+                        getActivity(appContext)?.window?.decorView
+                    )
+                )
+            ).check(matches(isDisplayed()))
+        }
 
         activityScenario.close()
     }
@@ -156,7 +173,7 @@ class RemindersActivityTest :
         onView(isRoot()).perform(ViewActions.closeSoftKeyboard())
         onView(ViewMatchers.withId(R.id.saveReminder)).perform(ViewActions.click())
 
-        // Verify that the Location error toast message appears
+        // Verify that the Location error snackbar message appears
         onView(withText(R.string.select_location)).inRoot(withDecorView(not(getActivity(appContext)?.window?.decorView))).check(matches(isDisplayed()))
 
         activityScenario.close()
@@ -198,6 +215,25 @@ class RemindersActivityTest :
             override fun getDescription(): String {
                 return "replace text"
             }
+        }
+    }
+
+    companion object {
+        fun longClickIn(x: Int, y: Int): ViewAction {
+            return GeneralClickAction(
+                Tap.LONG,
+                { view ->
+                    val screenPos = IntArray(2)
+                    view?.getLocationOnScreen(screenPos)
+
+                    val screenX = (screenPos[0] + x).toFloat()
+                    val screenY = (screenPos[1] + y).toFloat()
+
+                    floatArrayOf(screenX, screenY)
+                },
+                Press.FINGER,
+                InputDevice.SOURCE_MOUSE,
+                MotionEvent.BUTTON_PRIMARY)
         }
     }
 

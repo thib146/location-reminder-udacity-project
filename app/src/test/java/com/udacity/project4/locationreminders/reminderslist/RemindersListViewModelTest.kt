@@ -12,7 +12,6 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.pauseDispatcher
 import kotlinx.coroutines.test.resumeDispatcher
 import org.hamcrest.CoreMatchers.`is`
-import org.hamcrest.CoreMatchers.not
 import org.hamcrest.MatcherAssert.assertThat
 import org.junit.Before
 import org.junit.Rule
@@ -91,7 +90,8 @@ class RemindersListViewModelTest {
         // When loading all reminders
         remindersListViewModel.loadReminders()
 
-        // Then no data and an error message are shown
+        // Then no data and an error message Snackbar are shown
         assertThat(remindersListViewModel.showNoData.getOrAwaitValue(), `is`(true))
+        assertThat(remindersListViewModel.showSnackBar.getOrAwaitValue(), `is`("Test exception"))
     }
 }
