@@ -64,4 +64,17 @@ class RemindersLocalRepositoryTest {
         assertThat(result.data.latitude, `is`(newReminder.latitude))
     }
 
+    @Test
+    fun saveReminder_retrievesReminderWithErrorMessage() = runTest {
+        // GIVEN - A new reminder saved in the database.
+        val newReminder = ReminderDTO("title", "description", "location", 0.0, 0.0)
+        localDataSource.saveReminder(newReminder)
+
+        // WHEN  - Retrieve the reminder with the wrong ID
+        val result = localDataSource.getReminder("1234567")
+
+        // THEN - An error message should be shown
+        assertThat((result as Result.Error).message, `is`("Reminder not found!"))
+    }
+
 }
